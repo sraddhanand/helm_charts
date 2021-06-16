@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mongodb.db_host }}
+  labels:
+    tier: database
+    env: {{ .Values.environment }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.mongodb.db_port }}
+      targetPort: {{ .Values.mongodb.db_port }}
+      protocol: TCP
+      name: mongo
+  selector:
+    tier: database
+    env: {{ .Values.environment }}

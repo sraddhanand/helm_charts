@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-ss
+  labels:
+    {{- include "fastapi.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  serviceName: {{ .Values.mongodb.db_host | quote }}
+  selector:
+    matchLabels:
+      tier: database
+      env: {{ .Values.environment }}
+  template:
+    metadata:
+      name: mongod
+      labels:
+        tier: database
+        env: {{ .Values.environment }}
+    spec:
+      containers:
+      - name: mongod
+        image: {{ .Values.mongodb.image | quote }}        
+        env:
+        - name: mongo_DB
+          value: {{ .Values.mongodb.db_name }}
+        volumeMounts:
+        - mountPath: "/data/db"
+          name: host-mongo-pvc
+        ports:
+        - containerPort: 27017
+      volumes:        
+      - name: host-mongo-pvc
+        emptyDir: {}
